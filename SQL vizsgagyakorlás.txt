@@ -1,0 +1,111 @@
+SQL házi feladat
+
+CREATE DATABASE users 
+DEFAULT CHARACTER SET UTF8
+COLLATE utf8_unicode_ci
+
+USE users;
+CREATE TABLE person (
+    id int PRIMARY KEY AUTO_INCREMENT,
+    user_name varchar(255) NOT NULL,
+    user_pass varchar(255) NOT Null,
+    last_name varchar(50) NOT Null,
+    first_name varchar(50) NOT Null,
+    country varchar(80) NOT Null DEFAULT 'Magyarország',
+    state varchar(50),
+    postal_code int(10) NOT Null,
+    city varchar(50) NOT Null DEFAULT 'Budapest',
+    address varchar(50) NOT Null,
+    gender bit NOT Null,
+    dob date NOT Null,
+    email varchar(50) NOT Null,
+    phone varchar(20) NOT Null
+    )
+    ENGINE = MYISAM
+
+ALTER TABLE person
+ADD CONSTRAINT chk_dob CHECK date(dob) BETWEEN '1900-01-01' AND CURRENT_DATE()
+ADD CONSTRAINT chk_phone CHECK (phone = '+3620%' OR '+3630%' OR '+3670%')
+ADD CONSTRAINT gmail_email CHECK email = '%@gmail.com'
+ADD UNIQUE(email)
+ADD UNIQUE (user_name)
+CHANGE gender DEFAULT 'férfi'	
+ADD CONSTRAINT chk_gender CHECK gender = 'férfi' OR 'nő'
+
+ALTER TABLE person
+MODIFY postal_code varchar (10)
+
+ALTER TABLE person
+MODIFY gender varchar (10)
+
+INSERT INTO person
+VALUES (
+'1', 'user-01', 'pass-01', 'Kiss', 'Árpád', 'Magyarország', 'Budapest', '1001', 'Budapest', 'Kacsóh Pongrác út 11.', 'férfi', '1990-02-12', 'kiss.arpad@gmail.com', '+36701234567'
+'2', 'user-02', 'pass-02', 'Kovács', 'Géza', 'Magyarország', 'Győr-Moson-Sopron', '9023', 'Győr', 'Tihanyi Árpád út 72.', 'férfi', '1980-01-01', 'kovacs.geza@gmail.com', '+36304367843'
+'3', 'user-03', 'pass-03', 'Karvaly', 'Beáta', 'Magyarország', '', '1089', 'Budapest', 'Sárkány utca 4.', 'nő', '1963-12-31', 'karvaly.beata@gmail.com', '+36203857390'
+'4', 'user-04', 'pass-04', 'Láncos', 'Csombor', 'Magyarország', 'Pest', '2100', 'Gödöllő', 'Szabadság tér 110.', 'férfi', '2000-03-21', 'lancos.csombor@gmail.com', '+36707329871'
+'5', 'user-05', 'pass-05', 'Csermely', 'Fruzsina', 'Magyarország', 'Budapest', '2100', 'Budapest', 'Jónás utca 2.', 'nő', '2001-05-15', 'csermely.fruzsina@gmail.com', '+36302849382'
+'6', 'user-06', 'pass-06', 'Csáth', 'Lukács', 'Magyarország', '', '1120', 'Budapest', 'Szentlélek tér 4.', 'férfi', '1939-07-11', 'csath.lukacs@gmail.com', '+36206674329'
+'7', 'user-07', 'pass-07', 'Seszták', 'Éva', 'Magyarország', 'Komárom-Esztergom', '2800', 'Tatabánya', 'Bánya köz 1.', 'nő', '1965-08-20', 'sesztak.eva@gmail.com', '+36304738282'
+'8', 'user-08', 'pass-08', 'Bánki', 'Donát', 'Magyarország', '', '1218', 'Budapest', 'Zsigmond Vilmos utca 42.', 'férfi', '1970-09-03', 'banki.donat@gmail.com', '+36304638738'
+'9', 'user-09', 'pass-09', 'Fehér', 'Antal', 'Magyarország', 'Budapest', '1090', 'Budapest', 'Szépia köz 5.', 'férfi', '1994-05-05', 'feher.antal@gmail.com', '+36705874838'
+'10', 'user-10', 'pass-10', 'Zsémbes', 'Judit', 'Magyarország', 'Budapest', '1032', 'Budapest', 'Marcona út 76.', 'nő', '1973-04-32', 'zsembes.judit@gmail.com', '+36204839281'
+    )
+	
+	-- ki kell javítani a dátumot a 10-esnél 30-ra
+INSERT INTO person
+VALUES ('10', 'user-10', 'pass-10', 'Zsémbes', 'Judit', 'Magyarország', 'Budapest', '1032', 'Budapest', 'Marcona út 76.', 'nő', '1973-04-30', 'zsembes.judit@gmail.com', '+36204839281')
+
+a)
+SELECT `user_name`
+FROM `person` 
+WHERE year(dob) < 1990
+
+b)
+SELECT `last_name` AS 'Vezetéknév',`first_name` AS 'Keresztnév',`dob` AS 'Születési dátum'
+FROM person
+ORDER BY dob DESC
+LIMIT 3
+
+c)
+SELECT `first_name` AS 'Keresztnév', last_name AS 'Vezetéknév'
+FROM person
+WHERE 1900 <= year(dob) <= 2000
+	AND city = 'Budapest'
+	AND gender = 'férfi'
+    AND state <> ' '
+ORDER BY last_name, first_name
+
+d)
+SELECT city AS 'Város', COUNT(id) AS 'Lakosok száma'
+ FROM person
+ GROUP BY city
+ HAVING COUNT(id)
+ AND COUNT(id) > 2
+ 
+ e)
+ SELECT `last_name` AS 'Vezetéknév', `first_name` AS 'Keresztnév', `user_name`, `email` AS 'Email cím', `phone` AS 'Telefonszám'
+FROM `person` 
+WHERE year(dob) < 2000 OR city <> 'Budapest'
+ORDER BY gender
+
+f)
+UPDATE person
+SET email = 'zsjudit@gmail.com'
+WHERE phone = '+36204839281'
+
+g)
+DELETE FROM person
+WHERE person.id = 3
+
+h)
+RENAME TABLE person
+TO applicationusers
+
+i)
+CREATE INDEX index_email
+ON applicationusers(email)
+
+j)
+ALTER TABLE applicationusers
+DROP state
